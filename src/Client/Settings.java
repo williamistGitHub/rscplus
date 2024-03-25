@@ -159,6 +159,7 @@ public class Settings {
   public static HashMap<String, Boolean> PATCH_HBAR_512_LAST_PIXEL = new HashMap<String, Boolean>();
   public static HashMap<String, Boolean> USE_JAGEX_FONTS = new HashMap<String, Boolean>();
   public static HashMap<String, Boolean> PATCH_WRENCH_MENU_SPACING = new HashMap<String, Boolean>();
+  public static HashMap<String, Integer> CHAT_HISTORY_HEIGHT = new HashMap<String, Integer>();
   public static HashMap<String, Integer> LOG_VERBOSITY = new HashMap<String, Integer>();
   public static HashMap<String, Boolean> LOG_SHOW_TIMESTAMPS = new HashMap<String, Boolean>();
   public static HashMap<String, Boolean> LOG_SHOW_LEVEL = new HashMap<String, Boolean>();
@@ -1029,6 +1030,15 @@ public class Settings {
         "custom",
         getPropBoolean(
             props, "patch_wrench_menu_spacing", PATCH_WRENCH_MENU_SPACING.get("default")));
+
+    CHAT_HISTORY_HEIGHT.put("vanilla", 4);
+    CHAT_HISTORY_HEIGHT.put("vanilla_resizable", 4);
+    CHAT_HISTORY_HEIGHT.put("lite", 4);
+    CHAT_HISTORY_HEIGHT.put("default", 4);
+    CHAT_HISTORY_HEIGHT.put("heavy", 8);
+    CHAT_HISTORY_HEIGHT.put("all", 8);
+    CHAT_HISTORY_HEIGHT.put(
+        "custom", getPropInt(props, "chat_history_height", CHAT_HISTORY_HEIGHT.get("default")));
 
     PATCH_HBAR_512_LAST_PIXEL.put("vanilla", false);
     PATCH_HBAR_512_LAST_PIXEL.put("vanilla_resizable", false);
@@ -3313,6 +3323,7 @@ public class Settings {
       props.setProperty("use_jagex_fonts", Boolean.toString(USE_JAGEX_FONTS.get(preset)));
       props.setProperty(
           "patch_wrench_menu_spacing", Boolean.toString(PATCH_WRENCH_MENU_SPACING.get(preset)));
+      props.setProperty("chat_history_height", Integer.toString(CHAT_HISTORY_HEIGHT.get(preset)));
       props.setProperty("log_verbosity", Integer.toString(LOG_VERBOSITY.get(preset)));
       props.setProperty("log_show_timestamps", Boolean.toString(LOG_SHOW_TIMESTAMPS.get(preset)));
       props.setProperty("log_show_level", Boolean.toString(LOG_SHOW_LEVEL.get(preset)));

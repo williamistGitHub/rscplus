@@ -426,7 +426,13 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
     }
 
     // Or hovering over scrollbar bounds
-    chatScrollbarBounds = new Rectangle(Renderer.width - 16, Renderer.height - 75, 16, 58);
+    chatScrollbarBounds =
+        new Rectangle(
+            Renderer.width - 16,
+            Renderer.height - Menu.chatBoxHeight() - 20,
+            16,
+            Menu.chatBoxHeight() + 3);
+
     return x >= chatScrollbarBounds.x
         && x <= chatScrollbarBounds.x + chatScrollbarBounds.width
         && y >= chatScrollbarBounds.y
@@ -435,11 +441,11 @@ public class MouseHandler implements MouseListener, MouseMotionListener, MouseWh
 
   private int getCurrentChatType() {
     if (Menu.chat_selected == 1) {
-      return Menu.chat_type1;
+      return Menu.chat_chat_history;
     } else if (Menu.chat_selected == 2) {
-      return Menu.chat_type2;
+      return Menu.chat_quest_history;
     } else if (Menu.chat_selected == 3) {
-      return Menu.chat_type3;
+      return Menu.chat_private_history;
     }
 
     return -1;

@@ -24,9 +24,9 @@ import Client.Settings;
 public class Menu {
 
   public static Object chat_menu;
-  public static int chat_type1;
-  public static int chat_type2;
-  public static int chat_type3;
+  public static int chat_chat_history;
+  public static int chat_quest_history;
+  public static int chat_private_history;
   public static int chat_input;
   public static int chat_selected;
 
@@ -52,16 +52,22 @@ public class Menu {
       try {
         int[] y = (int[]) Reflection.menuY.get(chat_menu);
         y[chat_input] = Renderer.height_client - (334 - 324);
-        y[chat_type1] = Renderer.height_client - (334 - 269);
-        y[chat_type2] = Renderer.height_client - (334 - 269);
-        y[chat_type3] = Renderer.height_client - (334 - 269);
+        y[chat_chat_history] = Renderer.height_client - chatBoxHeight() - 9;
+        y[chat_quest_history] = Renderer.height_client - chatBoxHeight() - 9;
+        y[chat_private_history] = Renderer.height_client - chatBoxHeight() - 9;
         Reflection.menuY.set(chat_menu, y);
+
+        int[] h = (int[]) Reflection.menuHeight.get(chat_menu);
+        h[chat_chat_history] = chatBoxHeight();
+        h[chat_quest_history] = chatBoxHeight();
+        h[chat_private_history] = chatBoxHeight();
+        Reflection.menuHeight.set(chat_menu, h);
 
         int[] w = (int[]) Reflection.menuWidth.get(chat_menu);
         w[chat_input] = Renderer.width - 10;
-        w[chat_type1] = Renderer.width - 10;
-        w[chat_type2] = Renderer.width - 10;
-        w[chat_type3] = Renderer.width - 10;
+        w[chat_chat_history] = Renderer.width - 10;
+        w[chat_quest_history] = Renderer.width - 10;
+        w[chat_private_history] = Renderer.width - 10;
         Reflection.menuWidth.set(chat_menu, w);
 
         int[] x = (int[]) Reflection.menuX.get(quest_menu);
@@ -78,6 +84,16 @@ public class Menu {
       } catch (Exception e) {
       }
     }
+  }
+
+  /**
+   * calculates the chat box height in pixels and returns it this method is called from bytecode, be
+   * careful with it!
+   *
+   * @return chat box height in pixels
+   */
+  public static int chatBoxHeight() {
+    return Settings.CHAT_HISTORY_HEIGHT.get(Settings.currentProfile) * 14;
   }
 
   /**

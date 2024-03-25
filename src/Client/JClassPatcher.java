@@ -648,13 +648,13 @@ public class JClassPatcher {
       hookClassVariable( // Selected tab
           methodNode, "client", "Zh", "I", "Game/Menu", "chat_selected", "I", true, false);
       hookClassVariable( // Chat history
-          methodNode, "client", "Fh", "I", "Game/Menu", "chat_type1", "I", true, false);
+          methodNode, "client", "Fh", "I", "Game/Menu", "chat_chat_history", "I", true, false);
       hookClassVariable( // All messages
           methodNode, "client", "bh", "I", "Game/Menu", "chat_input", "I", true, false);
       hookClassVariable( // Quest history
-          methodNode, "client", "ud", "I", "Game/Menu", "chat_type2", "I", true, false);
+          methodNode, "client", "ud", "I", "Game/Menu", "chat_quest_history", "I", true, false);
       hookClassVariable( // Private history
-          methodNode, "client", "mc", "I", "Game/Menu", "chat_type3", "I", true, false);
+          methodNode, "client", "mc", "I", "Game/Menu", "chat_private_history", "I", true, false);
 
       // Quest menu
       hookClassVariable(
@@ -1834,6 +1834,23 @@ public class JClassPatcher {
         Iterator<AbstractInsnNode> insnNodeList = methodNode.instructions.iterator();
         while (insnNodeList.hasNext()) {
           AbstractInsnNode insnNode = insnNodeList.next();
+
+          // Chatbox resizing scrollbar hit test patch
+          if (insnNode.getOpcode() == Opcodes.BIPUSH) {
+            IntInsnNode call = (IntInsnNode) insnNode;
+            if (call.operand == 66) {
+              // get chat box height
+              methodNode.instructions.insertBefore(
+                  insnNode,
+                  new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Menu", "chatBoxHeight", "()I"));
+
+              // add 10
+              methodNode.instructions.insertBefore(insnNode, new IntInsnNode(Opcodes.BIPUSH, 10));
+              methodNode.instructions.insertBefore(insnNode, new InsnNode(Opcodes.IADD));
+
+              methodNode.instructions.remove(insnNode);
+            }
+          }
 
           // Chat command patch
           if (insnNode.getOpcode() == Opcodes.SIPUSH) {

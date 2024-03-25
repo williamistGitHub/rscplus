@@ -32,6 +32,7 @@ import Game.GameApplet;
 import Game.Item;
 import Game.JoystickHandler;
 import Game.KeyboardHandler;
+import Game.Menu;
 import Game.Renderer;
 import Game.Replay;
 import Game.SoundEffects;
@@ -285,6 +286,7 @@ public class ConfigWindow {
   private JCheckBox generalPanelUseJagexFontsCheckBox;
   private JCheckBox generalPanelPatchWrenchMenuSpacingCheckbox;
   private JCheckBox generalPanelDebugModeCheckbox;
+  private JSpinner generalPanelChatHistoryHeightSpinner;
   private JCheckBox generalPanelExceptionHandlerCheckbox;
   private JLabel generalPanelNamePatchModeDesc;
   private JCheckBox generalPanelUseDarkModeCheckbox;
@@ -1745,6 +1747,39 @@ public class ConfigWindow {
         addCheckbox("Camera movement is relative to player", generalPanel);
     generalPanelCameraMovableRelativeCheckbox.setToolTipText(
         "Camera movement will follow the player position");
+
+    JPanel generalPanelChatHistoryHeightPanel = new JPanel();
+    generalPanel.add(generalPanelChatHistoryHeightPanel);
+    generalPanelChatHistoryHeightPanel.setLayout(
+        new BoxLayout(generalPanelChatHistoryHeightPanel, BoxLayout.X_AXIS));
+    generalPanelChatHistoryHeightPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    generalPanelChatHistoryHeightPanel.setLayout(
+        new BoxLayout(generalPanelChatHistoryHeightPanel, BoxLayout.X_AXIS));
+
+    JLabel generalPanelChatHistoryHeightLabel = new JLabel("Chat history lines:");
+    generalPanelChatHistoryHeightPanel.add(generalPanelChatHistoryHeightLabel);
+    generalPanelChatHistoryHeightPanel.setAlignmentY(0.5f);
+    generalPanelChatHistoryHeightPanel.setToolTipText(
+        "Change the height of the chat history in the \"Chat history\", \"Quest history\", and \"Private history\" tabs");
+
+    if (Util.isUsingFlatLAFTheme()) {
+      generalPanelChatHistoryHeightPanel.add(Box.createRigidArea(osScaleMul(new Dimension(4, 0))));
+    }
+
+    generalPanelChatHistoryHeightSpinner = new JSpinner();
+    generalPanelChatHistoryHeightPanel.add(generalPanelChatHistoryHeightSpinner);
+    generalPanelChatHistoryHeightSpinner.setMaximumSize(osScaleMul(new Dimension(48, 22)));
+    generalPanelChatHistoryHeightSpinner.setMinimumSize(osScaleMul(new Dimension(48, 22)));
+    generalPanelChatHistoryHeightSpinner.setAlignmentY(0.5f);
+    generalPanelChatHistoryHeightPanel.setBorder(
+        BorderFactory.createEmptyBorder(0, 0, osScaleMul(4), 0));
+    generalPanelChatHistoryHeightSpinner.putClientProperty("JComponent.sizeVariant", "mini");
+
+    SpinnerNumberModel chatLinesSpinnerModel = new SpinnerNumberModel();
+    chatLinesSpinnerModel.setMinimum(3);
+    chatLinesSpinnerModel.setMaximum(12);
+    chatLinesSpinnerModel.setValue(4);
+    generalPanelChatHistoryHeightSpinner.setModel(chatLinesSpinnerModel);
 
     addSettingsHeader(generalPanel, "Graphical effect changes");
 
@@ -6148,6 +6183,8 @@ public class ConfigWindow {
         Settings.SHOW_TIME_UNTIL_HP_REGEN.get(
             Settings.currentProfile)); // TODO: Implement this feature
     generalPanelDebugModeCheckbox.setSelected(Settings.DEBUG.get(Settings.currentProfile));
+    generalPanelChatHistoryHeightSpinner.setValue(
+        new Integer(Settings.CHAT_HISTORY_HEIGHT.get(Settings.currentProfile)));
     generalPanelExceptionHandlerCheckbox.setSelected(
         Settings.EXCEPTION_HANDLER.get(Settings.currentProfile));
     highlightedItemsTextField.setText(String.join(",", Settings.HIGHLIGHTED_ITEMS.get("custom")));
@@ -6612,6 +6649,8 @@ public class ConfigWindow {
     Settings.LAG_INDICATOR.put(
         Settings.currentProfile, overlayPanelLagIndicatorCheckbox.isSelected());
     Settings.DEBUG.put(Settings.currentProfile, generalPanelDebugModeCheckbox.isSelected());
+    Settings.CHAT_HISTORY_HEIGHT.put(
+        Settings.currentProfile, (Integer) generalPanelChatHistoryHeightSpinner.getValue());
     Settings.EXCEPTION_HANDLER.put(
         Settings.currentProfile, generalPanelExceptionHandlerCheckbox.isSelected());
     Settings.HIGHLIGHTED_ITEMS.put(
@@ -6953,6 +6992,7 @@ public class ConfigWindow {
           Item.patchItemCommands();
           GameApplet.syncFontSetting();
           SoundEffects.adjustMudClientSfxVolume();
+          Menu.resize();
         });
   }
 
