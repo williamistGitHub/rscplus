@@ -1521,6 +1521,39 @@ public class JClassPatcher {
 
           start = start.getNext();
         }
+
+        start = methodNode.instructions.getFirst();
+
+        while (start != null) {
+          if (start.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+            MethodInsnNode methodInsnNode = (MethodInsnNode) start;
+
+            if (methodInsnNode.name.equals("c") && methodInsnNode.desc.equals("(I)V")) {
+              methodNode.instructions.insertBefore(start, new VarInsnNode(Opcodes.ALOAD, 0)); // push 'this'
+              methodNode.instructions.insertBefore(start, new FieldInsnNode(Opcodes.GETFIELD, "client", "Ek", "Llb;")); // get world
+
+              methodNode.instructions.insertBefore(start, new MethodInsnNode(
+                      Opcodes.INVOKESTATIC,
+                      "Game/Renderer3D",
+                      "preRender3d",
+                      "(Ljava/lang/Object;)V",
+                      false
+              ));
+
+              methodNode.instructions.insert(start, new MethodInsnNode(
+                      Opcodes.INVOKESTATIC,
+                      "Game/Renderer3D",
+                      "postRender3d",
+                      "()V",
+                      false
+              ));
+
+              break;
+            }
+          }
+
+          start = start.getNext();
+        }
       }
 
       // This fixes the rendering bug that happens during end of days replays.
@@ -5192,6 +5225,13 @@ public class JClassPatcher {
         methodNode.instructions.insertBefore(
             findNode,
             new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Camera", "postSetCamera", "()V", false));
+      }
+
+      // Scene clear
+      if (methodNode.name.equals("a") && methodNode.desc.equals("(Z)V")) {
+        AbstractInsnNode returnNode = methodNode.instructions.getLast();
+        methodNode.instructions.insertBefore(returnNode, new VarInsnNode(Opcodes.ALOAD, 0));
+        methodNode.instructions.insertBefore(returnNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "Game/Renderer3D", "onSceneClear", "(Ljava/lang/Object;)V", false));
       }
     }
   }

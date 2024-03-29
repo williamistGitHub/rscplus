@@ -78,17 +78,24 @@ public class Reflection {
   public static Field memberMapPack = null;
   public static Field memberLandscapePack = null;
   public static Field memberSoundPack = null;
+  public static Method getElevation = null;
   public static Field soundBuffer = null;
   public static Field soundDisabled = null;
 
   public static Field objectModels = null;
+  public static Constructor gameModelConstructor = null;
   public static Method gameModelRotate = null;
   public static Method gameModelSetLight = null;
+  public static Method gameModelCreateFace = null;
+  public static Method gameModelGetOrAddVertex = null;
+  public static Method gameModelSetPosition = null;
+  public static Field gameModelVertexY = null;
 
   public static Method showInputPopup = null;
   public static Method getParameter = null;
   public static Method displayMessage = null;
   public static Method setCameraSize = null;
+  public static Method addModel = null;
   public static Method setGameBounds = null;
   public static Method setLoginText = null;
   public static Method closeConnection = null;
@@ -180,6 +187,7 @@ public class Reflection {
   private static final String DISPLAYMESSAGE =
       "private final void client.a(boolean,java.lang.String,int,java.lang.String,int,int,java.lang.String,java.lang.String)";
   private static final String SETCAMERASIZE = "final void lb.a(int,boolean,int,int,int,int,int)";
+  private static final String ADDMODEL = "final void lb.a(ca,byte)";
   private static final String SETGAMEBOUNDS = "final void ua.a(int,int,int,int,byte)";
   private static final String SETLOGINTEXT =
       "private final void client.b(byte,java.lang.String,java.lang.String)";
@@ -270,6 +278,11 @@ public class Reflection {
   private static final String GAMEMODELROTATE = "final void ca.f(int,int,int,int)";
   private static final String GAMEMODELSETLIGHT =
       "final void ca.a(int,int,int,int,boolean,int,int)";
+  private static final String GAMEMODELCREATEFACE = "final int ca.a(int,int[],int,int,boolean)";
+  private static final String GAMEMODELGETORADDVERTEX = "final int ca.e(int,int,int,int)";
+  private static final String GAMEMODELSETPOSITION = "final void ca.c(int,int,int,int)";
+
+  private static final String GETELEVATION = "final int k.f(int,int,int)";
 
   private static final String UPDATE_BANK_ITEMS = "private final void client.C(int)";
 
@@ -309,6 +322,8 @@ public class Reflection {
 
       // Model
       c = classLoader.loadClass("ca");
+      gameModelConstructor = c.getDeclaredConstructor(Integer.TYPE, Integer.TYPE);
+      gameModelVertexY = c.getDeclaredField("ob");
       methods = c.getDeclaredMethods();
       for (Method method : methods) {
         if (method.toGenericString().equals(GAMEMODELROTATE)) {
@@ -317,6 +332,15 @@ public class Reflection {
         } else if (method.toGenericString().equals(GAMEMODELSETLIGHT)) {
           gameModelSetLight = method;
           Logger.Info("Found gameModelSetLight");
+        } else if (method.toGenericString().equals(GAMEMODELCREATEFACE)) {
+          gameModelCreateFace = method;
+          Logger.Info("Found gameModelCreateFace");
+        } else if (method.toGenericString().equals(GAMEMODELGETORADDVERTEX)) {
+          gameModelGetOrAddVertex = method;
+          Logger.Info("Found gameModelGetOrAddVertex");
+        } else if (method.toGenericString().equals(GAMEMODELSETPOSITION)) {
+          gameModelSetPosition = method;
+          Logger.Info("Found gameModelSetPosition");
         }
       }
 
@@ -641,6 +665,9 @@ public class Reflection {
         if (method.toGenericString().equals(SETCAMERASIZE)) {
           setCameraSize = method;
           Logger.Info("Found setCameraSize");
+        } else if (method.toGenericString().equals(ADDMODEL)) {
+          addModel = method;
+          Logger.Info("Found addModel");
         }
       }
 
@@ -845,8 +872,17 @@ public class Reflection {
           Logger.Info("Found memberLandscapePack");
         }
       }
+      methods = c.getDeclaredMethods();
+      for (Method method : methods) {
+        if (method.toGenericString().equals(GETELEVATION)) {
+          getElevation = method;
+          Logger.Info("Found getElevation");
+        }
+      }
 
       // Set all accessible
+      if (gameModelConstructor != null) gameModelConstructor.setAccessible(true);
+      if (gameModelVertexY != null) gameModelVertexY.setAccessible(true);
       if (clientStreamField != null) clientStreamField.setAccessible(true);
       if (menuRenderer != null) menuRenderer.setAccessible(true);
       if (colorLeftRight != null) colorLeftRight.setAccessible(true);

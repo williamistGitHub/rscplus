@@ -746,16 +746,6 @@ public class Client {
     }
   }
 
-  public static void gameModelSetLight(Object model) {
-    try {
-      Reflection.gameModelSetLight.setAccessible(true);
-      Reflection.gameModelSetLight.invoke(model, -50, 48, -10, -50, true, 48, 117);
-      Reflection.gameModelSetLight.setAccessible(false);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
   public static void init() {
     loadAreaDefinitions();
     adaptStrings();
@@ -3822,6 +3812,17 @@ public class Client {
     String color = colorDict[colorIdx].substring(4);
     // A coward dies a thousand deaths, but the valiant tastes death but once.
     displayMessage(color + "You are beautiful today, " + player_name + ".", CHAT_QUEST);
+  }
+
+  public static int getElevation(int x, int y) {
+    try {
+      Reflection.getElevation.setAccessible(true);
+      int result = (int) Reflection.getElevation.invoke(worldInstance, x, y, -35);
+      Reflection.getElevation.setAccessible(false);
+      return result;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
 
