@@ -1852,9 +1852,9 @@ public class JClassPatcher {
             }
           }
 
-          // Chat command patch
           if (insnNode.getOpcode() == Opcodes.SIPUSH) {
             IntInsnNode call = (IntInsnNode) insnNode;
+            // Chat command patch
             if (call.operand == 627) {
               AbstractInsnNode jmpNode = insnNode;
               while (jmpNode.getOpcode() != Opcodes.IFEQ) jmpNode = jmpNode.getNext();
@@ -1873,6 +1873,27 @@ public class JClassPatcher {
                       "processChatCommand",
                       "(Ljava/lang/String;)Ljava/lang/String;"));
               methodNode.instructions.insert(insertNode, new VarInsnNode(Opcodes.ALOAD, 2));
+            }
+
+            // Scrollbar horizontal hit test patch
+            else if (call.operand == -495)  {
+              // get game width
+              methodNode.instructions.insertBefore(insnNode, new FieldInsnNode(
+                      Opcodes.GETSTATIC,
+                      "Game/Renderer",
+                      "width",
+                      "I"
+              ));
+
+              // subtract 18 (default is 494 here, 18 = 512 - 494)
+              methodNode.instructions.insertBefore(insnNode, new IntInsnNode(Opcodes.BIPUSH, 18));
+              methodNode.instructions.insertBefore(insnNode, new InsnNode(Opcodes.ISUB));
+
+              // bitwise not (xor -1) because obfuscated code
+              methodNode.instructions.insertBefore(insnNode, new InsnNode(Opcodes.ICONST_M1));
+              methodNode.instructions.insertBefore(insnNode, new InsnNode(Opcodes.IXOR));
+
+              methodNode.instructions.remove(insnNode);
             }
           }
         }
